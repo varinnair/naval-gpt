@@ -1,4 +1,4 @@
-import { NavalEssay } from "@/types";
+import { NavalChunks, NavalEssay } from "@/types";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { encode } from "gpt-3-encoder";
@@ -7,6 +7,7 @@ import fs from "fs";
 export {};
 
 const BASE_URL = "https://www.navalmanack.com";
+const CHUNK_SIZE = 200;
 
 const getLinks = async () => {
     const html = await axios.get(
@@ -68,6 +69,8 @@ const getEssay = async (essay_title: string, essay_url: string) => {
                 return;
             }
 
+            // if the sentence ends with a letter or digit, add a period and space at the end.
+            // Done to make sure there are no sentences that don't have a delimeter like periods
             if (cleanedText[cleanedText.length - 1].match(/[a-z0-9]/i)) {
                 essayText += cleanedText + ". ";
             } else {
@@ -75,6 +78,8 @@ const getEssay = async (essay_title: string, essay_url: string) => {
             }
         }
     });
+
+    essayText = essayText.trim();
 
     return {
         title: essay_title,
@@ -85,13 +90,63 @@ const getEssay = async (essay_title: string, essay_url: string) => {
     };
 };
 
+const getChunks = async (essay: NavalEssay) => {
+    const { title, url, content } = essay;
+    const essay_tokens = essay.tokens;
+
+    let essayChunks: string[] = [];
+
+    if (essay_tokens > CHUNK_SIZE) {
+        const sentences = content.split(". ");
+        let currChunkText = "";
+
+        for (let i = 0; i < sentences.length; i++) {
+            const sentence = sentences[i];
+
+            if (encode(currChunkText + sentence).length > CHUNK_SIZE) {
+                essayChunks.push(currChunkText.trim());
+                currChunkText = "";
+            }
+
+            // if the sentence ends with a letter or digit, add a period and space at the end.
+            // Done to make sure there are no sentences that don't have a delimeter like periods
+            if (sentence[sentence.length - 1].match(/[a-z0-9]/i)) {
+                currChunkText += sentence + ". ";
+            } else {
+                currChunkText += sentence + " ";
+            }
+        }
+        essayChunks.push(currChunkText.trim());
+    } else {
+        essayChunks.push(content);
+    }
+
+    let chunks: NavalChunks[] = [];
+    for (let i = 0; i < essayChunks.length; i++) {
+        const essayChunkText = essayChunks[i];
+        chunks.push({
+            essay_title: title,
+            essay_url: url,
+            content: essayChunkText,
+            tokens: encode(essayChunkText).length,
+            embedding: [],
+        });
+    }
+
+    return {
+        ...essay,
+        chunks,
+    };
+};
+
 (async () => {
     const linksArray = await getLinks();
 
-    const essays: NavalEssay[] = [];
+    let essays: NavalEssay[] = [];
     for (let i = 0; i < linksArray.length; i++) {
         const { title, url } = linksArray[i];
-        const essay = await getEssay(title, url);
-        console.log(essay);
+        const essay: NavalEssay = await getEssay(title, url);
+        const chunkedEssay: NavalEssay = await getChunks(essay);
+        essays.push(chunkedEssay);
     }
 })();
