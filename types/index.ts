@@ -3,10 +3,10 @@ export type NavalEssay = {
     url: string;
     content: string;
     tokens: number;
-    chunks: NavalChunks[];
+    chunks: NavalChunk[];
 };
 
-export type NavalChunks = {
+export type NavalChunk = {
     essay_title: string;
     essay_url: string;
     content: string;

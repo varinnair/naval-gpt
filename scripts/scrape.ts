@@ -1,4 +1,4 @@
-import { NavalChunks, NavalEssay, NavalJSON } from "@/types";
+import { NavalChunk, NavalEssay, NavalJSON } from "@/types";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { encode } from "gpt-3-encoder";
@@ -121,7 +121,7 @@ const getChunks = async (essay: NavalEssay) => {
         essayChunks.push(content);
     }
 
-    let chunks: NavalChunks[] = [];
+    let chunks: NavalChunk[] = [];
     for (let i = 0; i < essayChunks.length; i++) {
         const essayChunkText = essayChunks[i];
         chunks.push({
