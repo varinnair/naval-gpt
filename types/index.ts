@@ -13,3 +13,7 @@ export type NavalChunks = {
     tokens: number;
     embedding: number[];
 };
+
+export type NavalJSON = {
+    essays: NavalEssay[];
+};

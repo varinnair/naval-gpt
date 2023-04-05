@@ -1,4 +1,4 @@
-import { NavalChunks, NavalEssay } from "@/types";
+import { NavalChunks, NavalEssay, NavalJSON } from "@/types";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { encode } from "gpt-3-encoder";
@@ -149,4 +149,10 @@ const getChunks = async (essay: NavalEssay) => {
         const chunkedEssay: NavalEssay = await getChunks(essay);
         essays.push(chunkedEssay);
     }
+
+    const json: NavalJSON = {
+        essays,
+    };
+
+    fs.writeFileSync("scripts/naval_essays.json", JSON.stringify(json));
 })();
