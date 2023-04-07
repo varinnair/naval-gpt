@@ -1,7 +1,6 @@
 import Head from "next/head";
 import { useState } from "react";
 import { NavalChunk } from "@/types";
-import endent from "endent";
 
 export default function Home() {
     const [query, setQuery] = useState("");
@@ -23,6 +22,41 @@ export default function Home() {
         }
 
         const chunks: NavalChunk[] = await searchResponse.json();
+
+        let prompt = `Use the following passages to answer the query: ${query}`;
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk: NavalChunk = chunks[i];
+            prompt += "\n\n" + chunk.content;
+        }
+
+        const answerResponse = await fetch("/api/answer", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt }),
+        });
+
+        if (!answerResponse.ok) {
+            return;
+        }
+
+        const data = answerResponse.body;
+
+        if (!data) {
+            return;
+        }
+
+        const reader = data.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+
+        while (!done) {
+            const { value, done: doneReading } = await reader.read();
+            done = doneReading;
+            const chunkValue = decoder.decode(value);
+            setAnswer((prev) => prev + chunkValue);
+        }
     };
     return (
         <>
@@ -46,6 +80,8 @@ export default function Home() {
                     onChange={(e) => setQuery(e.target.value)}
                 />
                 <button onClick={handleQuery}>Search</button>
+                <br />
+                <div>{answer}</div>
             </div>
         </>
     );

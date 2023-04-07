@@ -1,4 +1,4 @@
-import { openai, supabase } from "@/utils";
+import { supabase } from "@/utils";
 
 export const config = {
     runtime: "edge",
