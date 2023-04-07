@@ -154,18 +154,18 @@ export default function Home() {
             return;
         }
 
-        localStorage.setItem("PG_KEY", apiKey);
-        localStorage.setItem("PG_MATCH_COUNT", matchCount.toString());
-        localStorage.setItem("PG_MODE", mode);
+        localStorage.setItem("NAVAL_KEY", apiKey);
+        localStorage.setItem("NAVAL_MATCH_COUNT", matchCount.toString());
+        localStorage.setItem("NAVAL_MODE", mode);
 
         setShowSettings(false);
         inputRef.current?.focus();
     };
 
     const handleClear = () => {
-        localStorage.removeItem("PG_KEY");
-        localStorage.removeItem("PG_MATCH_COUNT");
-        localStorage.removeItem("PG_MODE");
+        localStorage.removeItem("NAVAL_KEY");
+        localStorage.removeItem("NAVAL_MATCH_COUNT");
+        localStorage.removeItem("NAVAL_MODE");
 
         setApiKey("");
         setMatchCount(5);
@@ -181,20 +181,20 @@ export default function Home() {
     }, [matchCount]);
 
     useEffect(() => {
-        const PG_KEY = localStorage.getItem("PG_KEY");
-        const PG_MATCH_COUNT = localStorage.getItem("PG_MATCH_COUNT");
-        const PG_MODE = localStorage.getItem("PG_MODE");
+        const NAVAL_KEY = localStorage.getItem("NAVAL_KEY");
+        const NAVAL_MATCH_COUNT = localStorage.getItem("NAVAL_MATCH_COUNT");
+        const NAVAL_MODE = localStorage.getItem("NAVAL_MODE");
 
-        if (PG_KEY) {
-            setApiKey(PG_KEY);
+        if (NAVAL_KEY) {
+            setApiKey(NAVAL_KEY);
         }
 
-        if (PG_MATCH_COUNT) {
-            setMatchCount(parseInt(PG_MATCH_COUNT));
+        if (NAVAL_MATCH_COUNT) {
+            setMatchCount(parseInt(NAVAL_MATCH_COUNT));
         }
 
-        if (PG_MODE) {
-            setMode(PG_MODE as "search" | "chat");
+        if (NAVAL_MODE) {
+            setMode(NAVAL_MODE as "search" | "chat");
         }
 
         inputRef.current?.focus();
