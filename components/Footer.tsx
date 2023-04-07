@@ -3,7 +3,7 @@ import { FC } from "react";
 
 export const Footer: FC = () => {
     return (
-        <div className="flex py-2 px-8 border-t border-gray-300 items-center sm:justify-between justify-center">
+        <div className="flex py-2 px-8 border-t border-gray-300 items-center justify-center">
             <div className="hidden sm:flex"></div>
 
             <div className="flex space-x-4">
