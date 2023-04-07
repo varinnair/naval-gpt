@@ -8,6 +8,8 @@ Scraped the essays from the [Almanack Index Page](https://www.navalmanack.com/al
 
 Broke them up into chunks of 200 tokens and stored them in a PostgreSQL table in Supabase.
 
+See `scripts/scrape.ts` for the code.
+
 ## Running Locally
 
 Requirements
