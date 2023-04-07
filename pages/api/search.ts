@@ -6,17 +6,21 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
     try {
-        const { query } = (await req.json()) as { query: string };
+        const { query, apiKey, matches } = (await req.json()) as {
+            query: string;
+            apiKey: string;
+            matches: number;
+        };
 
         const response = await fetch("https://api.openai.com/v1/embeddings", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY!}`,
+                Authorization: `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
                 model: "text-embedding-ada-002",
-                input: query,
+                input: query.replace(/\n/g, " "),
             }),
         });
 
@@ -30,7 +34,7 @@ const handler = async (req: Request): Promise<Response> => {
         const { data, error } = await supabase.rpc("naval_search", {
             query_embedding: embedding,
             similarity_threshold: 0.5,
-            match_count: 5,
+            match_count: matches,
         });
 
         if (error) {

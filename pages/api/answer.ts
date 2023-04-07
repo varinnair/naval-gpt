@@ -8,12 +8,12 @@ export const config = {
     runtime: "edge",
 };
 
-const getChatCompletion = async (prompt: string) => {
+const getChatCompletion = async (prompt: string, apiKey: string) => {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
             model: "gpt-3.5-turbo",
@@ -21,7 +21,7 @@ const getChatCompletion = async (prompt: string) => {
                 {
                     role: "system",
                     content:
-                        "You are a helpful assistant that accurately answers queries using Paul Graham's essays. Use the text provided to form your answer, but avoid copying word-for-word from the essays. Try to use your own words when possible. Keep your answer under 5 sentences. Be accurate, helpful, concise, and clear.",
+                        "You are a helpful assistant that accurately answers queries using the almanack of Naval Ravikant, his essays and teachings. Use the text provided to form your answer, but avoid copying word-for-word from the essays. Try to use your own words when possible. Keep your answer under 5 sentences. Be accurate, helpful, concise, and clear.",
                 },
                 {
                     role: "user",
@@ -79,9 +79,12 @@ const getStream = async (response: Response) => {
 
 const handler = async (req: Request): Promise<Response> => {
     try {
-        const { prompt } = (await req.json()) as { prompt: string };
+        const { prompt, apiKey } = (await req.json()) as {
+            prompt: string;
+            apiKey: string;
+        };
 
-        const response = await getChatCompletion(prompt);
+        const response = await getChatCompletion(prompt, apiKey);
 
         const stream = await getStream(response);
 
