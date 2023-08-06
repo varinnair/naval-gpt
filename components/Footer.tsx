@@ -9,7 +9,7 @@ export const Footer: FC = () => {
             <div className="flex space-x-4">
                 <a
                     className="flex items-center hover:opacity-50"
-                    href="https://twitter.com/varin_nair"
+                    href="https://twitter.com/varinnair"
                     target="_blank"
                     rel="noreferrer"
                 >
